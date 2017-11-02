@@ -1,6 +1,6 @@
 ---
 title: "STAT/MATH 495: Problem Set 09"
-author: "WRITE YOUR NAME(S) HERE"
+author: "Pei Gong"
 date: "2017-11-07"
 output:
   html_document:
@@ -62,10 +62,12 @@ ggplot(NULL, aes(x=x1, y=x2, col=cluster)) +
 
 1. Run KMC 10 times on `observations_1` and comment on the consistency of the
 results.
+
+
+
 1. Speculate on the root cause of any consistency or inconsistency in the
 results.
-1. Run KMC 10 times on `observations_2` and comment on the consistentcy of the
-results.
+1. Run KMC 10 times on `observations_2` and comment on the consistentcy of the results.
 1. Speculate on the root cause of any consistency or inconsistency in the
 results.
 
@@ -75,7 +77,101 @@ results.
 1.
 1.
 1.
+```{r}
+# Set observations to be one of two datasets
+observations1 <- observations_1
+clusters<-rnorm(10,1,1)
+k_means_results<-rnorm(10,1,1)
+cluster_centers<-rnorm(10,1,1)
+k <- 2
+k_means_results <- kmeans(observations1, centers=k)
+  clusters <- k_means_results$cluster
+  cluster_centers <- k_means_results$centers
+  cluster_centers<- cluster_centers%>% 
+  as_tibble() %>% 
+  mutate(cluster=as.factor(1:k))
 
+ # Run the additional 9 times through a for loop 
+
+  for(i in 1:9){
+  k_means_loop <- kmeans(observations1, centers=k)
+  cluster_loop <- k_means_loop$centers
+  cluster_centers_loop<- cluster_loop%>% 
+  as_tibble() %>% 
+  mutate(cluster=as.factor(1:k))
+  #combine new cluster centers to the exisiting cluster center 
+  cluster_centersnew<-bind_rows(cluster_centers,cluster_centers_loop)
+  }
+
+```
+
+Demonstrate the variation of the centers through standard deviation. 
+```{r}
+center1<-subset(cluster_centersnew,cluster==1)
+center2<-subset(cluster_centersnew,cluster==2)
+
+#for center 1
+h_spread_center1<-sd(center1$x1);h_spread_center1
+v_spread_center1<-sd(center1$x2);v_spread_center1  
+
+#for center2
+h_spread_center2<-sd(center2$x1);h_spread_center2
+v_spread_center2<-sd(center2$x2);v_spread_center2  
+```
+
+Presenting the centers with the observations uncategorized. There are only 4 distinct outcomes from the 10 repeated clustering. 
+```{r}
+ggplot(NULL, aes(x=x1, y=x2)) +
+  geom_point(data=observations) +
+  geom_point(data=cluster_centersnew, aes(col=cluster),size=5)
+
+```
+
+Now 10 times for observation 2 
+```{r}
+observations2 <- observations_2
+k <- 2
+k_means_results2 <- kmeans(observations2, centers=k)
+  clusters2 <- k_means_results2$cluster
+  cluster_centers2 <- k_means_results2$centers
+  cluster_centers2<- cluster_centers2%>% 
+  as_tibble() %>% 
+  mutate(cluster=as.factor(1:k))
+
+ # Run the additional 9 times through a for loop 
+for(i in 1:9){
+  k_means_loop2 <- kmeans(observations2, centers=k)
+  cluster_loop2 <- k_means_loop2$centers
+  cluster_centers_loop2<- cluster_loop2%>% 
+  as_tibble() %>% 
+  mutate(cluster=as.factor(1:k))
+  #combine new cluster centers to the exisiting cluster center 
+  cluster_centersnew2<-bind_rows(cluster_centers2,cluster_centers_loop)
+  }
+
+```
+
+Demonstrate the variation of the centers through standard deviation. 
+```{r}
+center1_2<-subset(cluster_centersnew2,cluster==1)
+center2_2<-subset(cluster_centersnew2,cluster==2)
+
+#for center 1
+h_spread_center1_1<-sd(center1_2$x1);h_spread_center1_1
+v_spread_center1_2<-sd(center1_2$x2);v_spread_center1_2 
+
+#for center2
+h_spread_center2_1<-sd(center2_2$x1);h_spread_center2
+v_spread_center2_2<-sd(center2_2$x2);v_spread_center2  
+```
+
+Presenting the centers with the observations uncategorized. There are only 4 distinct outcomes from the 10 repeated clustering. 
+```{r}
+ggplot(NULL, aes(x=x1, y=x2)) +
+  geom_point(data=observations2) +
+  geom_point(data=cluster_centersnew2,aes(col=cluster),size=5)
+
+```
 
 
 # Bonus question: Code your own
