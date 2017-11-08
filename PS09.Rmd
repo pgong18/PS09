@@ -72,31 +72,31 @@ results.
 observations1 <- observations_1
 k <- 2
 k_means_results <- kmeans(observations1, centers=k)
-  clusters <- k_means_results$cluster
-  cluster_centers <- k_means_results$centers
-  cluster_centers<- cluster_centers%>% 
-  as_tibble() %>% 
-  mutate(cluster=as.factor(1:k))
+clusters <- k_means_results$cluster
+cluster_centers <- k_means_results$centers
+cluster_centers<- cluster_centers%>% 
+as_tibble() %>% 
+mutate(cluster=as.factor(1:k))
+cluster_centersnew = tibble()
 
  # Run the additional 9 times through a for loop 
-for(i in 1:9){
+for(i in 1:10){
   k_means_loop <- kmeans(observations1, centers=k)
   cluster_loop <- k_means_loop$centers
-  cluster_centers_loop<- cluster_loop%>% 
+  cluster_centers_loop<- cluster_loop %>% 
   as_tibble() %>% 
   mutate(cluster=as.factor(1:k))
   #combine new cluster centers to the exisiting cluster center 
-  cluster_centersnew<-bind_rows(cluster_centers,cluster_centers_loop)
-  }
-
+  cluster_centersnew <-rbind(cluster_centersnew,cluster_centers_loop)
+}
 ```
 
-Presenting the centers with the observations uncategorized. There are only 1 pairs of distinct outcome from the 10 repeated clustering. The cluster center is pretty consistent. It might be that because of the distribution of the data, there is only one way of optimally assigning points to different clusters.  
+Presenting the centers with the observations uncategorized.The results are inconsistent with 4 distinct paris. Based on the concluded clusters, we could see that the observations are essentially partitioned into halves by an axis.Because the points in `observations_1` are randomly scattered with no clear grouping, at the initial stage of assigning points to different cluster, the initial assignment play a big role.
 ```{r}
 ggplot(NULL, aes(x=x1, y=x2)) +
   geom_point(data=observations1) +
   geom_point(data=cluster_centersnew, aes(col=cluster),size=5)
-
+ 
 ```
 
 Now 10 times for observation 2 
@@ -104,27 +104,27 @@ Now 10 times for observation 2
 observations2 <- observations_2
 k <- 2
 k_means_results2 <- kmeans(observations2, centers=k)
-  clusters2 <- k_means_results2$cluster
-  cluster_centers2 <- k_means_results2$centers
-  cluster_centers2<- cluster_centers2%>% 
-  as_tibble() %>% 
-  mutate(cluster=as.factor(1:k))
+clusters2 <- k_means_results2$cluster
+cluster_centers2 <- k_means_results2$centers
+cluster_centers2<- cluster_centers2%>% 
+as_tibble() %>% 
+mutate(cluster=as.factor(1:k))
+cluster_centersnew2 = tibble()
 
  # Run the additional 9 times through a for loop 
-for(i in 1:9){
+for(i in 1:10){
   k_means_loop2 <- kmeans(observations2, centers=k)
   cluster_loop2 <- k_means_loop2$centers
-  cluster_centers_loop2<- cluster_loop2%>% 
+  cluster_centers_loop2<- cluster_loop2 %>% 
   as_tibble() %>% 
   mutate(cluster=as.factor(1:k))
   #combine new cluster centers to the exisiting cluster center 
-  cluster_centersnew2<-bind_rows(cluster_centers2,cluster_centers_loop)
-  }
-
+  cluster_centersnew2 <-rbind(cluster_centersnew2,cluster_centers_loop)
+}
 ```
 
 
-Presenting the centers with the observations uncategorized. There are only 2 distinct pairs from the 10 repeated clustering. The cluster center is fairly consistent. Because of the distribution of the data, there are probably two ways of optimally assigning points to different clusters.  
+Presenting the centers with the observations uncategorized. There are only 1 distinct pairs from the 10 repeated clustering. The cluster center is fairly consistent. Because of the distribution of the data is clear with grouping, the initial assignment is close to the truth so through the steps of reoptimizing, it is easy to find the final optimal cluster assignment. 
 ```{r}
 ggplot(NULL, aes(x=x1, y=x2)) +
   geom_point(data=observations2) +
